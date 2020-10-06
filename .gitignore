@@ -1,0 +1,7 @@
+.DS_Store
+
+react-app/node_modules
+react-typescript/node_modules
+
+react-app/build
+react-typescript/build

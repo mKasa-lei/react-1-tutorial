@@ -1,0 +1,33 @@
+version: "3"
+services:
+  react:
+    build:
+      context: "."
+      dockerfile: "Dockerfile.app"
+    image: "react-education/app"
+    container_name: "react-education-app"
+    command: sh -c "yarn start"
+    ports:
+      - "4001:3000"
+    working_dir: "/code"
+    volumes:
+      - ./react-app/src:/code/react-app/src
+    environment:
+      - LOCAL=1
+    stdin_open: true
+
+  react-typescript:
+    build:
+      context: "."
+      dockerfile: "Dockerfile.typescript"
+    image: "react-education/typescript"
+    container_name: "react-education-typescript"
+    command: sh -c "yarn start"
+    ports:
+      - "4002:3000"
+    working_dir: "/code"
+    volumes:
+      - ./react-typescript/src:/code/react-typescript/src
+    environment:
+      - LOCAL=1
+    stdin_open: true
