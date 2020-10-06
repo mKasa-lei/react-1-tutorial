@@ -17,8 +17,6 @@ WORKDIR /code
 
 COPY react-typescript .
 
-WORKDIR /code/react-typescript
-
 RUN yarn install
 
 CMD ["yarn", "start"]

@@ -11,7 +11,7 @@ services:
       - "4001:3000"
     working_dir: "/code"
     volumes:
-      - ./react-app/src:/code/react-app/src
+      - ./react-app/src:/code/src
     environment:
       - LOCAL=1
     stdin_open: true
@@ -27,7 +27,7 @@ services:
       - "4002:3000"
     working_dir: "/code"
     volumes:
-      - ./react-typescript/src:/code/react-typescript/src
+      - ./react-typescript/src:/code/src
     environment:
       - LOCAL=1
     stdin_open: true
