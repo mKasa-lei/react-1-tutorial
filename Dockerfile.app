@@ -17,8 +17,6 @@ WORKDIR /code
 
 COPY react-app .
 
-WORKDIR /code/react-app
-
 RUN yarn install
 
 CMD ["yarn", "start"]
