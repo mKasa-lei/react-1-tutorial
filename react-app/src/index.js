@@ -11,36 +11,10 @@ function Square(props) {
   );
 }
 class Board extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(9).fill(null), //Array.fillは、配列の全要素に同じ値を設定する関数＝9個の配列を作り中身を全てnullにする
-      xIsNext: true,
-    };
-  }
-
-  handleClick(i) {
-    const history = this.state.history;
-    const current = history[history.length - 1];
-    const squares = this.state.squares.slice(); //Array.slice(start, end)はインデックスstartからインデックスendまでの要素を持つ配列を新しく生成する方法。（引数なしなので配列をコピーしている）
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    squares[i] = this.state.xIsNext ? "X" : "O";
-    this.setState({
-      history: history.concat([
-        {
-          squares: squares,
-        },
-      ]), //2以上の配列を結合して新しい配列を作る
-      xIsNext: !this.state.xIsNext,
-    });
-  }
-
   renderSquare(i) {
     return (
       <Square
-        value={this.state.squares[i]}
+        value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -76,17 +50,42 @@ class Game extends React.Component {
           squares: Array(9).fill(null),
         },
       ],
+      stepNumber: 0,
       xIsNext: true,
     };
   }
+  handleClick(i) {
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice(); //Array.slice(start, end)はインデックスstartからインデックスendまでの要素を持つ配列を新しく生成する方法。（引数なしなので配列をコピーしている）
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? "X" : "O";
+    this.setState({
+      history: history.concat([
+        {
+          squares: squares,
+        },
+      ]), //2以上の配列を結合して新しい配列を作る
+      stepNumber: history.length,
+      xIsNext: !this.state.xIsNext,
+    });
+  }
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: step % 2 === 0,
+    });
+  }
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const moves = history.map((step, move) => {
       const desc = move ? "Go to move #" + move : "Go to game start";
       return (
-        <li>
+        <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
       );
