@@ -12,23 +12,27 @@ const Square = (props) => {
 }
 
 const Board = (props) => {
+  const squareArray = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+  ]
+
+  const squares = squareArray.map((value, index) => { //マス目を作るための配列。３つの配列から９つの配列を作る
+    return (
+      <div key={index} className='border-row'>
+        {value.map((array, number) => { //タグの中で関数を使う時は中かっこ{}
+          return (
+            <Square key={number} value={props.squares[array]} onClick={() => props.onClick(array)} />
+          )
+        })}
+      </div>
+    )
+  })
+
   return (
     <div>
-      <div className='border-row'>
-        <Square value={props.squares[0]} onClick={() => props.onClick(0)} />
-        <Square value={props.squares[1]} onClick={() => props.onClick(1)} />
-        <Square value={props.squares[2]} onClick={() => props.onClick(2)} />
-      </div>
-      <div className='border-row'>
-        <Square value={props.squares[3]} onClick={() => props.onClick(3)} />
-        <Square value={props.squares[4]} onClick={() => props.onClick(4)} />
-        <Square value={props.squares[5]} onClick={() => props.onClick(5)} />
-      </div>
-      <div className='border-row'>
-        <Square value={props.squares[6]} onClick={() => props.onClick(6)} />
-        <Square value={props.squares[7]} onClick={() => props.onClick(7)} />
-        <Square value={props.squares[8]} onClick={() => props.onClick(8)} />
-      </div>
+      { squares}
     </div>
   )
 }
