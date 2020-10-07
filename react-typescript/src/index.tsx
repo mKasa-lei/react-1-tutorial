@@ -66,33 +66,24 @@ const calculateWinner = (squares: Array<"X" | "O" | null>) => {
 };
 
 const Game: React.FC = () => {
-  const [history, setHistory] = useState([
-    {
-      squares: Array(9).fill(null),
-    },
-  ]);
+  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]);
   const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXIsNext] = useState(true);
 
-  const historyCurrent = history;
-  const current = historyCurrent[stepNumber];
+  const current = history[stepNumber];
   const winner = calculateWinner(current.squares);
 
   const handleClick = (i: number) => {
     const historySlice = history.slice(0, stepNumber + 1);
     const current = historySlice[historySlice.length - 1];
     const squares = current.squares.slice();
+
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     squares[i] = xIsNext ? "X" : "O";
-    setHistory(
-      historySlice.concat([
-        {
-          squares: squares,
-        },
-      ])
-    );
+
+    setHistory(historySlice.concat([{ squares: squares }]));
     setStepNumber(historySlice.length);
     setXIsNext(!xIsNext);
   };
