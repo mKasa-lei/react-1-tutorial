@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM, {} from "react-dom";
+import ReactDOM from "react-dom";
 import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
 
@@ -12,28 +12,22 @@ const Square = (props) => {
 }
 
 const Board = (props) => {
-  const renderSquare = (i) => {
-    return (
-      <Square value={props.squares[i]} onClick={() => props.onClick(i)} />
-    );
-  }
-
   return (
     <div>
       <div className='border-row'>
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
+        <Square value={props.squares[0]} onClick={() => props.onClick(0)} />
+        <Square value={props.squares[1]} onClick={() => props.onClick(1)} />
+        <Square value={props.squares[2]} onClick={() => props.onClick(2)} />
       </div>
       <div className='border-row'>
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
+        <Square value={props.squares[3]} onClick={() => props.onClick(3)} />
+        <Square value={props.squares[4]} onClick={() => props.onClick(4)} />
+        <Square value={props.squares[5]} onClick={() => props.onClick(5)} />
       </div>
       <div className='border-row'>
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
+        <Square value={props.squares[6]} onClick={() => props.onClick(6)} />
+        <Square value={props.squares[7]} onClick={() => props.onClick(7)} />
+        <Square value={props.squares[8]} onClick={() => props.onClick(8)} />
       </div>
     </div>
   )
@@ -45,17 +39,17 @@ const Game = () => {
   const [xIsNext, setXIsNext] = useState(true);
 
   const handleClick = (i) => {
-    const historyData = history.slice(0, stepNumber + 1);
-    const current = historyData[historyData.length - 1];
-    const squares = current.squares.slice();
+    const historyData = history.slice(0, stepNumber + 1); //新たにクリックする手前までのデータ
+    const current = historyData[historyData.length - 1]; //現在の手
+    const squares = current.squares.slice(); //打った手のデータを配列にいれる
 
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    squares[i] = xIsNext ? 'X' : 'O';
-    setHistory(history.concat({ squares: squares }));
-    setStepNumber(historyData.length);
-    setXIsNext(!xIsNext);
+    squares[i] = xIsNext ? 'X' : 'O'; //trueならX、falseならOになる
+    setHistory(historyData.concat({ squares: squares })); //現在のターンで打った手を新しく配列として格納する
+    setStepNumber(historyData.length); //現在が何ターン目なのかの記録
+    setXIsNext(!xIsNext); //trueならfalse、falseならtrueを返す
   }
 
   const jumpTo = (step) => {
@@ -63,12 +57,12 @@ const Game = () => {
     setXIsNext((step % 2) === 0);
   }
 
-  const historyData = history;
-  const current = historyData[stepNumber];
-  const winner = calculateWinner(current.squares);
+  const historyArray = history; //過去に打った手の情報を取得
+  const current = historyArray[stepNumber];　//現在の手がどのような盤面になっているのかの情報
+  const winner = calculateWinner(current.squares); //現在までの手が勝利条件に当てはまっているのかどうか
 
-  const moves = historyData.map((step, move) => {
-    const desc = move ? 'Go to move #' + move : 'Go to start';
+  const moves = historyArray.map((step, move) => {
+    const desc = move ? 'Go to move #' + move : 'Go to game start'; //moveが０ならGo to startを表示させ、一手以降ならGo to moveを表示させる
     return (
       <li key={move} className='play-history'>
         <button onClick={() => jumpTo(move)}>{desc}</button>
@@ -76,7 +70,7 @@ const Game = () => {
     )
   })
 
-  let status;
+  let status; //現在までの盤面が勝利条件に当てはまるのであれば勝者を表示、当てはまらなければ次のプレイヤーを表示する
   if (winner) {
     status = 'Winner: ' + winner;
   }
