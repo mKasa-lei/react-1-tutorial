@@ -4,7 +4,7 @@ import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
 
 function Square(props) {
-  return ( //盤面にXかOを表示させる
+  return ( //Boardから処理を受け取り、クリックした時、盤面にXかOを表示させる
     <button className='square' onClick={props.onClick}>
       {props.value}
     </button>
@@ -48,8 +48,8 @@ class Game extends React.Component {
       history: [{
         squares: Array(9).fill(null), //表示されている物とは別に記録するための配列を作成
       }],
-      stepNumber: 0, //手数のカウント
-      xIsNext: true, //現在が×なのか◯なのかの判定
+      stepNumber: 0, //手数のカウント（今が何ターン目なのか）
+      xIsNext: true, //現在がXなのかOなのかの判定
     };
   }
 
@@ -62,18 +62,18 @@ class Game extends React.Component {
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O'; //XとOを交互に表示させる
     this.setState({
-      history: history.concat([{ //this.state.historyの配列の中に過去の手の状態を記録させる
+      history: history.concat([{ //this.state.historyの配列の中に過去の手の状態の配列を新たに作る
         squares: squares, //現在の手を過去のものとして保存
       }]),
       stepNumber: history.length, //手数の記録
-      xIsNext: !this.state.xIsNext, //OならXを、XならOを返す
+      xIsNext: !this.state.xIsNext, //OならXを、XならOを返すようにする
     });
   }
 
   jumpTo(step) { //クリックした手数の盤面の状態を表示させる
     this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0, //偶数（後手）ならOを返すようにする
+      stepNumber: step, //現在が何手目なのかの情報を格納する
+      xIsNext: (step % 2) === 0, //偶数（後手）ならOを返すようにする ここ何でfalseじゃなくて0を渡してるの？
     });
   }
 
@@ -87,6 +87,7 @@ class Game extends React.Component {
       return (
         <li key={move} className='play-history'>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <p>{move}</p>
         </li>
       )
     })
@@ -95,8 +96,8 @@ class Game extends React.Component {
     if (winner) { //一列揃っていたら勝者を表示（calculateWinnerと同じ状態になった場合の処理）
       status = 'Winner: ' + winner;
     }
-    else { //一列揃っていない（勝ちが決まっていない）状態であれば次がどちらなのかを表示させる
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    else { //一列揃っていない状態の時
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O'); //次がどちらの手になるのかの結果を格納する
     }
 
     return (
@@ -109,7 +110,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div className='status'>{status}</div>
-          　<ol>{moves}</ol> {/* 盤面が増えるたびに過去の盤面を表示させるボタンを表示させる */}
+          <ol>{moves}</ol> {/* 盤面が増えるたびに過去の盤面を表示させるボタンを表示させるボタンを増やす */}
         </div>
       </div>
     );
