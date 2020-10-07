@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM, { render } from "react-dom";
+import ReactDOM, {} from "react-dom";
 import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
 
@@ -12,7 +12,7 @@ const Square = (props) => {
 }
 
 const Board = (props) => {
-  function renderSquare(i) {
+  const renderSquare = (i) => {
     return (
       <Square value={props.squares[i]} onClick={() => props.onClick(i)} />
     );
@@ -44,7 +44,7 @@ const Game = () => {
   const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXIsNext] = useState(true);
 
-  function handleClick(i) {
+  const handleClick = (i) => {
     const historyData = history.slice(0, stepNumber + 1);
     const current = historyData[historyData.length - 1];
     const squares = current.squares.slice();
@@ -58,7 +58,7 @@ const Game = () => {
     setXIsNext(!xIsNext);
   }
 
-  function jumpTo(step) {
+  const jumpTo = (step) => {
     setStepNumber(step);
     setXIsNext((step % 2) === 0);
   }
