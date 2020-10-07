@@ -1,4 +1,4 @@
-
+.game{display: flex;
 .board-row{
     display: flex;
     height:30px;
@@ -18,4 +18,8 @@
     .square{
         border-top:none;
     }
+}
+.game-info{
+    margin-left:20px;
+}
 }
