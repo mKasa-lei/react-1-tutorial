@@ -2,122 +2,122 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
+import { useState } from "react";
 
-function Square(props) {
+//コンポーネント間の関係 : Game > Board > Square
+//stateはトップレベルのGameで全て管理
+
+const Square = (props) => {
   return (
+    //BoardコンポーネントからvalueプロパティとonClickプロパティを受け取る
     <button className="square" onClick={props.onClick}>
       {props.value}
     </button>
   );
-}
-class Board extends React.Component {
-  renderSquare(i) {
+};
+
+const Board = (props) => {
+  const renderSquare = (i) => {
     return (
-      <Square
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
+      <Square //SquareコンポーネントにvalueプロパティとonClickプロパティのprops渡す（親から子にpropsを渡している）
+        value={props.squares[i]} //下のrenderメソッドで渡された値(クリックされた位置の情報)がvalueに入る
+        onClick={() => props.onClick(i)}
       />
     );
-  }
-  render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+  };
+  return (
+    //外枠を描画、renderSquare()を実行で、Squareコンポーネントのbutton.Squareが描画
+    <div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
       </div>
-    );
-  }
-}
-class Game extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      history: [
-        {
-          squares: Array(9).fill(null),
-        },
-      ],
-      stepNumber: 0,
-      xIsNext: true,
-    };
-  }
-  handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice(); //Array.slice(start, end)はインデックスstartからインデックスendまでの要素を持つ配列を新しく生成する方法。（引数なしなので配列をコピーしている）
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+    </div>
+  );
+};
+
+const Game = () => {
+  const [history, setHistory] = useState([
+    {
+      squares: Array(9).fill(null),
+    },
+  ]);
+  const [stepNumber, setStepNumber] = useState(0);
+  const [xIsNext, setxIsNext] = useState(true);
+
+  const handleClick = (i) => {
+    const historyA = history.slice(0, stepNumber + 1); //配列historyを中の最初からstepNumber+1のまでの要素を取得して配列をつくる
+    const current = historyA[historyA.length - 1];
+    const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? "X" : "O";
-    this.setState({
-      history: history.concat([
+    squares[i] = xIsNext ? "X" : "O";
+    setHistory(
+      historyA.concat([
         {
           squares: squares,
         },
-      ]), //2以上の配列を結合して新しい配列を作る
-      stepNumber: history.length,
-      xIsNext: !this.state.xIsNext,
-    });
-  }
-  jumpTo(step) {
-    this.setState({
-      stepNumber: step,
-      xIsNext: step % 2 === 0,
-    });
-  }
-  render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
-    const moves = history.map((step, move) => {
-      const desc = move ? "Go to move #" + move : "Go to game start";
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
-    });
-
-    let status;
-    if (winner) {
-      status = "Winner:" + winner;
-    } else {
-      status = "Next player:" + (this.state.xIsNext ? "X" : "O");
-    }
-
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board
-            squares={current.squares}
-            onClick={(i) => this.handleClick(i)}
-          />
-        </div>
-        <div className="game-info">
-          <div>{status}</div>
-          <ol>{moves}</ol>
-        </div>
-      </div>
+      ])
     );
+    setStepNumber(historyA.length);
+    setxIsNext(!xIsNext);
+  };
+
+  const jumpTo = (step) => {
+    setStepNumber(step);
+    setxIsNext(step % 2 === 0);
+    console.log("関数コンポーネント");
+  };
+
+  const historyA = history;
+  const current = historyA[stepNumber];
+  const winner = calculateWinner(current.squares);
+  const moves = historyA.map((step, move) => {
+    const desc = move ? "Go to move #" + move : "Go to game start";
+    return (
+      //ゲームの履歴をリスト化する
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{desc}</button>
+      </li>
+    );
+  });
+
+  let status;
+  if (winner) {
+    status = "Winner:" + winner;
+  } else {
+    status = "Next player:" + (xIsNext ? "X" : "O");
   }
-}
 
-ReactDOM.render(<Game />, document.getElementById("root"));
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board //Boardコンポーネントに squaresプロパティとonClickプロパティのprops渡す（親から子にpropsを渡している）
+          squares={current.squares}
+          onClick={(i) => handleClick(i)}
+        />
+      </div>
+      <div className="game-info">
+        <div>{status}</div>
+        <ol>{moves}</ol>
+      </div>
+    </div>
+  );
+};
 
-function calculateWinner(squares) {
+const calculateWinner = (squares) => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -135,7 +135,9 @@ function calculateWinner(squares) {
     }
   }
   return null;
-}
+};
+
+ReactDOM.render(<Game />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
