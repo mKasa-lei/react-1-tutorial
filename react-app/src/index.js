@@ -21,7 +21,7 @@ const Board = (props) => {
   const squares = squareArray.map((value, index) => { //マス目を作るための配列。３つの配列から９つの配列を作る
     return (
       <div key={index} className='border-row'>
-        {value.map((array, number) => { //タグの中で関数を使う時は中かっこ{}
+        {value.map((array, number) => { //mapの中で関数を使う時はconstは必要ない。今回はsquaresの中の配列を参照するため、ここではvalueを参照する
           return (
             <Square key={number} value={props.squares[array]} onClick={() => props.onClick(array)} />
           )
@@ -32,15 +32,15 @@ const Board = (props) => {
 
   return (
     <div>
-      { squares}
+      { squares }
     </div>
   )
 }
 
 const Game = () => {
-  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]);
-  const [stepNumber, setStepNumber] = useState(0);
-  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]); //過去の情報を格納するための配列を格納する。squaresは配列の名前
+  const [stepNumber, setStepNumber] = useState(0); //現在の手数の記録
+  const [xIsNext, setXIsNext] = useState(true); //現在XとOどちらのターンなのかの情報
 
   const handleClick = (i) => {
     const historyData = history.slice(0, stepNumber + 1); //新たにクリックする手前までのデータ
@@ -100,7 +100,7 @@ const Game = () => {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
-function calculateWinner(squares) { //XもしくはOが一列揃った状態
+function calculateWinner(squares) { //XもしくはOが一列揃った状態のデータを参照するための配列
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
