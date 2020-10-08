@@ -1,121 +1,108 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./style.scss";
-import * as serviceWorker from "./serviceWorker";
+import React, { useState } from "react"; //reactを使うためのimport
+import ReactDOM from "react-dom"; //reactDOMを使うためのimport
+import "./style.scss"; //sassの読み込み
+import * as serviceWorker from "./serviceWorker"; // バックグラウンドで動作したeventに対して何かを実行するためのAPI
 
-function Square(props) {
-    return (
-      <button 
-      className="square" onClick={props.onClick}>
-        {props.value}
-      </button>
+const Square=(props)=> { //borad上の四角の関数コンポーネント
+    return ( //構文を関数としてpropsにわたす
+      <button  //ボタンタグ開始
+      className="square" onClick={props.onClick}>  
+        {props.value} 
+      </button> //クリックした際に四角の中の状態を変化させる
     );
 }
 
-class Board extends React.Component {
-  renderSquare(i) {
-    return (
-    <Square 
-      value={this.props.squares[i]} 
-      onClick={() => this.props.onClick(i)}
-    />
+const Board=(props)=> {    //盤面のレンダリングとクリック次の操作のためのクラスをReactのコンポーネントを使い作成
+  
+  const squareNumbers=[
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+  ]  
+  return (
+    <div> 
+    {
+    squareNumbers.map((value,index)=>{
+      return(
+        <div key={index}>
+          {value.map((cell)=>{
+            return(
+              <Square key={cell}
+              value={props.squares[cell]} 
+              onClick={()=>{props.onClick(cell)}}
+            />      
+            )
+          })
+        }
+        </div>
+      )
+    })
+  }
+    </div>
     );
-  }
+  };
 
-  render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
-  }
-}
+const Game=()=>{
+  const [history,setHistory]=useState([{squares:Array(9).fill(null)}])
+  const [stepNumber,setStepNumber]=useState(0);
+  const [xIsNext,setXisNext]=useState(true);
 
-class Game extends React.Component {
-  constructor(props){
-    super(props);
-    this.state={
-      history:[{
-        squares:Array(9).fill(null)
-      }],
-      stepNumber:0,
-      xIsNext:true,
-    };
-  }
-  handleClick(i){
-    const history=this.state.history.slice(0,this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    if(calculateWinner(squares)||squares[i]){
-      return;
+  const historyCurrent=history; //
+  const current=historyCurrent[stepNumber]; //現在選択されている手番をレンダリングする
+  const winner = calculateWinner(current.squares);
+
+  const handleClick=(i)=>{ //マス目をクリックした際に行われる処理
+    const historyfuture=history.slice(0,stepNumber + 1); //操作している手番から未来にあたる履歴を削除する
+    const current = historyfuture[historyfuture.length - 1]; //historuで行って先の番号を保存しているので現在の番号はhistoryの1手後になる
+    const squaresA = current.squares.slice(); //現在地点よりも先に履歴がある場合捨て去り新しい配列にする
+    if(calculateWinner(squaresA)||squaresA[i]){ //勝者が決まっていたら
+      return; //終了する
     }
-    squares[i]=this.state.xIsNext ? 'X':'O';
-    this.setState({
-      history:history.concat([{
-        squares:squares
-      }]),
-      stepNumber:history.length,
-      xIsNext: !this.state.xIsNext,
-    });
-  }
-  jumpTo(step){
-    this.setState({
-      stepNumber:step,
-      xIsNext:(step%2)===0,
-    });
+    squaresA[i]=xIsNext ? 'X':'O'; //真偽値を入れ替えることで手番を交互に入れ替える
+      setHistory(historyfuture.concat([{
+        squares:squaresA
+      }])) //非破壊で履歴を保存する
+      setStepNumber(historyfuture.length); //何手目か
+      setXisNext(!xIsNext); //stateに保存されているXisNextがtrueの場合は反転させる
+    };
+
+  const jumpTo=(step)=>{ //タイムトラベル用の動作　クリックした場合クリックした部分の手数に移動　その手数が偶数なら次の手番をXとする
+      setStepNumber(step);
+      setXisNext((step%2)===0);
   }
 
-  render() {
-    const history=this.state.history;
-    const current=history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
-
-    const moves = history.map((stop,move)=>{
-      const desc = move ?
-        'Go to move #' + move :
-        'Go to game start';
+    const moves = historyCurrent.map((step,move)=>{ //history
+      const desc = move ? //moveに数値が入っている場合
+        'Go to move #' + move : //何手目に移動するかの履歴を表示
+        'Go to game start'; //そうでない場合、ゲームスタート前であることを表示
         return (
-          <li key={move}>
-            <button onClick={()=> this.jumpTo(move)}>{desc}</button>
-          </li>
+          <li key={move}> 
+            <button onClick={()=>jumpTo(move)}>{desc}</button>
+          </li> //履歴をkeyとして保存、手数としてjumpToに渡す
         );
     });
 
-    let status;
-    if (winner){
-      status='winner:' +winner;
-    }else{
-      status='Next player: '+(this.state.xIsNext ? 'X':'O');
+    let status; //statusの変数を用意
+    if (winner){ //もし勝者が決まっていたら
+      status='winner:' +winner; //ステータスに勝利者を表示
+    }else{ //そうでない場合
+      status='Next player: '+(xIsNext ? 'X':'O'); //次にプレイするプレイヤーを表示
     }
+    console.log(current.squares)
     return (
-      <div className="game">
+      <div className="game"> 
         <div className="game-board">
           <Board 
           squares= {current.squares}
-          onClick={(i)=>this.handleClick(i)}
+          onClick={(i)=>handleClick(i)}
           />
         </div>
         <div className="game-info">
-          <div>{status}</div>
+          <div>{status}</div> 
           <ol>{moves}</ol>
         </div>
-      </div>
+      </div> //ゲーム盤、ゲームの状況、何手動いているか、およびタイムバックボタンのレンダリング
     );
-  }
 }
 
 
