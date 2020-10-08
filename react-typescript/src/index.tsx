@@ -3,8 +3,12 @@ import ReactDOM from "react-dom";
 import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
 
+type MarkType = {
+  mark: "X" | "O" | null;
+};
+
 type SquareType = {
-  value: "X" | "O" | null;
+  value: MarkType;
   onClick: () => void;
 };
 
@@ -17,7 +21,7 @@ const Square: React.FC<SquareType> = (props) => {
 };
 
 type BoardType = {
-  squares: Array<"X" | "O" | null>;
+  squares: Array<MarkType>;
   onClick: (i: number) => void;
 };
 
@@ -45,7 +49,7 @@ const Board: React.FC<BoardType> = (props) => {
   );
 };
 
-const calculateWinner = (squares: Array<"X" | "O" | null>) => {
+const calculateWinner = (squares: Array<MarkType>) => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
