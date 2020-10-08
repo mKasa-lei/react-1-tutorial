@@ -1,0 +1,25 @@
+.game{display: flex;
+    .board-row{
+        display: flex;
+        height:30px;
+        margin:0;
+    .square{
+        background-color: #ffffff;
+        border:1px solid #000000;
+        height:100%;
+        width:30px;
+        outline: none;
+    }
+    .square+.square{
+        border-left:none;
+    }
+    }
+    .board-row+.board-row{
+        .square{
+            border-top:none;
+        }
+    }
+    .game-info{
+        margin-left:20px;
+    }
+    }
