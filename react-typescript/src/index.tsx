@@ -1,15 +1,134 @@
-import React from "react";
+import React, { useState } from 'react';
 import ReactDOM from "react-dom";
 import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
 
-const App = () => {
-  return <div>Hello, world!</div>;
-};
+type PropsBoard = {
+  value: number;
+  onClick: () => void; //functionでもいいが返す値がないことが確定しているのでvoidにする
+}
 
-ReactDOM.render(<App />, document.getElementById("root"));
+const Square: React.FC<PropsBoard> = (props) => {
+  return (
+    <button className='square' onClick={props.onClick}>
+      {props.value}
+    </button>
+  )
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+type PropsGame = {
+  squares: Array<number>;
+  onClick: Function; //こっちはvoidではなくfunctionにする
+}
+
+
+const Board: React.FC<PropsGame> = (props) => {
+  const squareArray = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+  ]
+
+  const squares = squareArray.map((value, index) => { //マス目を作るための配列。３つの配列から９つの配列を作る
+    return (
+      <div key={index} className='border-row'>
+        {value.map((array, number) => { //mapの中で関数を使う時はconstは必要ない。今回はsquaresの中の配列を参照するため、ここではvalueを参照する
+          return (
+            <Square key={number} value={props.squares[array]} onClick={() => props.onClick(array)} />
+          )
+        })}
+      </div>
+    )
+  })
+
+  return (
+    <div>
+      { squares }
+    </div>
+  )
+}
+
+
+const Game:React.FC = () => {
+  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]); //過去の情報を格納するための配列を格納する。squaresは配列の名前
+  const [stepNumber, setStepNumber] = useState(0); //現在の手数の記録
+  const [xIsNext, setXIsNext] = useState(true); //現在XとOどちらのターンなのかの情報
+
+  const handleClick = (i: number) => { //typeで書くとエラーが発生する
+    const historyData = history.slice(0, stepNumber + 1); //新たにクリックする手前までのデータ
+    const current = historyData[historyData.length - 1]; //現在の手
+    const squares = current.squares.slice(); //打った手のデータを配列にいれる
+
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = xIsNext ? 'X' : 'O'; //trueならX、falseならOになる
+    setHistory(historyData.concat({ squares: squares })); //現在のターンで打った手を新しく配列として格納する
+    setStepNumber(historyData.length); //現在が何ターン目なのかの記録
+    setXIsNext(!xIsNext); //trueならfalse、falseならtrueを返す
+  }
+
+  const jumpTo = (step:number) => {
+    setStepNumber(step);
+    setXIsNext((step % 2) === 0);
+  }
+
+  const historyArray = history; //過去に打った手の情報を取得
+  const current = historyArray[stepNumber];　//現在の手がどのような盤面になっているのかの情報
+  const winner = calculateWinner(current.squares); //現在までの手が勝利条件に当てはまっているのかどうか
+
+  const moves = historyArray.map((step, move) => {
+    const desc = move ? 'Go to move #' + move : 'Go to game start'; //moveが０ならGo to startを表示させ、一手以降ならGo to moveを表示させる
+    return (
+      <li key={move} className='play-history'>
+        <button onClick={() => jumpTo(move)}>{desc}</button>
+      </li>
+    )
+  })
+
+  let status; //現在までの盤面が勝利条件に当てはまるのであれば勝者を表示、当てはまらなければ次のプレイヤーを表示する
+  if (winner) {
+    status = 'Winner: ' + winner;
+  }
+  else {
+    status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+  }
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board
+          squares={current.squares}
+          onClick={(i: number) => handleClick(i)}
+        />
+      </div>
+      <div className="game-info">
+        <div className='status'>{status}</div>
+        <ol>{moves}</ol>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<Game />, document.getElementById("root"));
+
+function calculateWinner(squares: Array<number>) { //XもしくはOが一列揃った状態のデータを参照するための配列
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
 serviceWorker.unregister();
