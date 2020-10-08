@@ -4,7 +4,7 @@ import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
 
 type PropsBoard = {
-  value: number;
+  value: string | null; //Boardからどのマス目を指しているのかの数字
   onClick: () => void; //functionでもいいが返す値がないことが確定しているのでvoidにする
 }
 
@@ -17,22 +17,23 @@ const Square: React.FC<PropsBoard> = (props) => {
 }
 
 type PropsGame = {
-  squares: Array<number>;
+  squares: Array<string | null>; //squareArrayからmapされた配列
   onClick: Function; //こっちはvoidではなくfunctionにする
 }
 
 
 const Board: React.FC<PropsGame> = (props) => {
-  const squareArray = [
+  const squareArray: Array<Array<number>> = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
   ]
 
-  const squares = squareArray.map((value, index) => { //マス目を作るための配列。３つの配列から９つの配列を作る
+  const squares: JSX.Element[] = squareArray.map((value, index) => { //マス目を作るための配列。３つの配列から９つの配列を作る
     return (
       <div key={index} className='border-row'>
-        {value.map((array, number) => { //mapの中で関数を使う時はconstは必要ない。今回はsquaresの中の配列を参照するため、ここではvalueを参照する
+        {/* 二回目のmapでsquareArrayの中にある[0, 1, 2],[3, 4, 5],[6, 7, 8]を一つづつ取り出すことができるようになる */}
+        {value.map((array, number) => { //mapの中で関数を使う時はconstは必要ない。今回はsquaresの中の配列を参照するため、ここではvalue（[0, 1, 2]）を参照する
           return (
             <Square key={number} value={props.squares[array]} onClick={() => props.onClick(array)} />
           )
@@ -41,7 +42,7 @@ const Board: React.FC<PropsGame> = (props) => {
     )
   })
 
-  return (
+  return ( //書き方は簡単になったけれどやっていることはチュートリアルに書かれている物と同じ
     <div>
       { squares }
     </div>
@@ -50,16 +51,16 @@ const Board: React.FC<PropsGame> = (props) => {
 
 
 const Game:React.FC = () => {
-  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]); //過去の情報を格納するための配列を格納する。squaresは配列の名前
-  const [stepNumber, setStepNumber] = useState(0); //現在の手数の記録
-  const [xIsNext, setXIsNext] = useState(true); //現在XとOどちらのターンなのかの情報
+  const [history, setHistory] = useState<Array<{squares: Array<string | null>}>>([{ squares: Array(9).fill(null) }]); //過去の情報を格納するための配列を格納する。過去の手を保存するためのsquaresをsetStateする
+  const [stepNumber, setStepNumber] = useState<number>(0); //現在の手数の記録
+  const [xIsNext, setXIsNext] = useState<boolean>(true); //現在XとOどちらのターンなのかの情報
 
-  const handleClick = (i: number) => { //typeで書くとエラーが発生する
-    const historyData = history.slice(0, stepNumber + 1); //新たにクリックする手前までのデータ
-    const current = historyData[historyData.length - 1]; //現在の手
-    const squares = current.squares.slice(); //打った手のデータを配列にいれる
+  const handleClick: Function = (i:number) => { //typeで書くとエラーが発生する
+    const historyData: Array<{ squares: Array<string | null> }> = history.slice(0, stepNumber + 1); //新たにクリックする手前までのデータ
+    const current: { squares: Array<string | null> } = historyData[historyData.length - 1]; //現在の手
+    const squares: Array<string | null> = current.squares.slice(); //打った手のデータを配列にいれる
 
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares) || squares[i]) { //勝者が勝利を停止して、ゲームを続けさせられする
       return;
     }
     squares[i] = xIsNext ? 'X' : 'O'; //trueならX、falseならOになる
@@ -68,17 +69,17 @@ const Game:React.FC = () => {
     setXIsNext(!xIsNext); //trueならfalse、falseならtrueを返す
   }
 
-  const jumpTo = (step:number) => {
-    setStepNumber(step);
-    setXIsNext((step % 2) === 0);
+  const jumpTo: Function = (step:number) => {
+    setStepNumber(step); //現在が何手なのか
+    setXIsNext((step % 2) === 0); //ここで偶数であるかどうかの判定をする。偶数であればtrueを返す
   }
 
-  const historyArray = history; //過去に打った手の情報を取得
-  const current = historyArray[stepNumber];　//現在の手がどのような盤面になっているのかの情報
-  const winner = calculateWinner(current.squares); //現在までの手が勝利条件に当てはまっているのかどうか
+  const historyArray: Array<{ squares: Array<string | null>}> = history; //過去に打った手の情報を取得
+  const current: { squares: Array<string | null>} = historyArray[stepNumber];　//現在の手がどのような盤面になっているのかの情報
+  const winner: string | null = calculateWinner(current.squares); //現在までの手が勝利条件に当てはまっているのかどうか
 
-  const moves = historyArray.map((step, move) => {
-    const desc = move ? 'Go to move #' + move : 'Go to game start'; //moveが０ならGo to startを表示させ、一手以降ならGo to moveを表示させる
+  const moves: JSX.Element[] = historyArray.map((step, move) => {
+    const desc: string = move ? 'Go to move #' + move : 'Go to game start'; //moveが０ならGo to startを表示させ、一手以降ならGo to moveを表示させる
     return (
       <li key={move} className='play-history'>
         <button onClick={() => jumpTo(move)}>{desc}</button>
@@ -86,7 +87,7 @@ const Game:React.FC = () => {
     )
   })
 
-  let status; //現在までの盤面が勝利条件に当てはまるのであれば勝者を表示、当てはまらなければ次のプレイヤーを表示する
+  let status: string; //現在までの盤面が勝利条件に当てはまるのであれば勝者を表示、当てはまらなければ次のプレイヤーを表示する
   if (winner) {
     status = 'Winner: ' + winner;
   }
@@ -112,8 +113,8 @@ const Game:React.FC = () => {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
-function calculateWinner(squares: Array<number>) { //XもしくはOが一列揃った状態のデータを参照するための配列
-  const lines = [
+function calculateWinner(squares: Array<string | null>) { //関数を取得するとnull、X、Oを返す関数。返すのは数値ではないので注意
+  const lines: Array<Array<number>> = [ //五目並べの勝利条件が示されている配列
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -123,8 +124,8 @@ function calculateWinner(squares: Array<number>) { //XもしくはOが一列揃�
     [0, 4, 8],
     [2, 4, 6],
   ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
+  for (let i = 0; i < lines.length; i++) { //受け取った配列がlinesに一つでも当てはまったら最後の手はどちらだったのかを返す。それ以外の場合はnullを返す
+    const [a, b, c]: number[] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a];
     }

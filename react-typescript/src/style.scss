@@ -12,6 +12,10 @@ p{
     padding: 0;
 }
 
+button:focus{
+    outline: none;
+}
+
 .game{
     display: flex;
 }
