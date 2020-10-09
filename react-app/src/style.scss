@@ -1,0 +1,47 @@
+body {
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+}
+ol, ul {
+    padding-left: 30px;
+}
+.borad-row:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+/* 現在のプレイヤー表示 */
+.status {
+    margin-bottom: 10px;
+}
+/* マス目のデザイン */
+.square {
+    background: #FFF;
+    border: 1px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 34px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 34px;
+}
+.square:focus {
+    outline: none;
+}
+.kbd-navigation
+.square:focus {
+    background: #DDD;
+}
+/* 盤面と進行状況を含めた全体 */
+.game {
+    display: flex;
+    flex-direction: row;
+}
+/* ゲームの進行状況 */
+.game-info {
+    margin-left: 20px;
+}
