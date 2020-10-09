@@ -10,7 +10,7 @@ type PropsBoard = {
 
 const Square: React.FC<PropsBoard> = (props) => {
   return (
-    <button className='square' onClick={props.onClick}>
+    <button className={'square' + ' ' + (props.value === 'X' ? 'cross' : 'round')} onClick={props.onClick}>
       {props.value}
     </button>
   )
@@ -24,9 +24,10 @@ type PropsGame = {
 
 const Board: React.FC<PropsGame> = (props) => {
   const squareArray: Array<Array<number>> = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9, 10, 11],
+    [12, 13, 14, 15],
   ]
 
   const squares: JSX.Element[] = squareArray.map((value, index) => { //マス目を作るための配列。３つの配列から９つの配列を作る
@@ -115,18 +116,20 @@ ReactDOM.render(<Game />, document.getElementById("root"));
 
 function calculateWinner(squares: Array<string | null>) { //関数を取得するとnull、X、Oを返す関数。返すのは数値ではないので注意
   const lines: Array<Array<number>> = [ //五目並べの勝利条件が示されている配列
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9, 10, 11],
+    [12, 13, 14, 15],
+    [0, 4, 8, 12],
+    [1, 5, 9, 13],
+    [2, 6, 10, 14],
+    [3, 7, 11, 15],
+    [0, 5, 10, 15],
+    [3, 6, 9, 12],
   ];
   for (let i = 0; i < lines.length; i++) { //受け取った配列がlinesに一つでも当てはまったら最後の手はどちらだったのかを返す。それ以外の場合はnullを返す
-    const [a, b, c]: number[] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    const [a, b, c, d]: number[] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c] && squares[b] === squares[d]) {
       return squares[a];
     }
   }

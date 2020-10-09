@@ -28,6 +28,12 @@ button:focus{
     align-items: center;
 }
 
+$bird_red: url(./images/bird_red.png);
+
+.game-board{
+    cursor: $bird_red, auto;
+}
+
 .border-row{
     display: flex;
 
@@ -40,7 +46,7 @@ button:focus{
 
 .square{
     background-color: #FFFFFF;
-    border: 1px solid #999999;
+    border: 2px solid #004D20;
     font-size: 30px;
     font-weight: bold;
     line-height: 70px;
@@ -50,4 +56,15 @@ button:focus{
     margin-right: -1px;
     margin-top: -1px;
     padding: 0;
+    :hover{
+        background-color: #004D20;
+    }
+}
+
+.round{
+    color: #FF8080;
+}
+
+.cross{
+    color: #8080FF;
 }
