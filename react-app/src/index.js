@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./style.scss";
 import * as serviceWorker from "./serviceWorker";
-import { useState } from "react";
+import { useState } from "react"; //useStateを使う場合は{ useState } をインポートする
 
 //コンポーネント間の関係 : Game > Board > Square
 //stateはトップレベルのGameで全て管理

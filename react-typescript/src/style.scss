@@ -1,0 +1,147 @@
+body {
+  margin: 30px;
+  background-color: #000;
+}
+#root {
+  margin: 0 auto;
+  width: 900px;
+}
+button {
+  border: none;
+}
+.game-title {
+  font-size: 70px;
+  font-family: "Faustina", serif;
+  letter-spacing: 3px;
+}
+.point-color {
+  color: #96442e;
+  font-family: "Faustina", serif;
+}
+.board-row + .board-row {
+  border-top: 8px solid #fff;
+}
+.board-row :nth-child(2),
+.board-row :nth-child(3) {
+  border-left: 8px solid #fff;
+}
+.board-row:after {
+  clear: both;
+  content: " ";
+  display: table;
+}
+.status {
+  margin-bottom: 15px;
+}
+.square:focus {
+  outline: none;
+}
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.square {
+  width: 200px;
+  height: 200px;
+  background-color: #000;
+
+  font-size: 150px;
+  font-weight: bold;
+  line-height: 200px;
+  padding: 0;
+  text-align: center;
+  float: left;
+  color: #96442e;
+}
+
+.square:hover {
+  background-color: #fff;
+}
+.history-list {
+  width: 250px;
+  height: 50px;
+  margin-top: 10px;
+  background-color: #fff;
+  color: #000;
+  font-size: 28px;
+  font-family: "Nanum Gothic", sans-serif;
+}
+
+.next-player {
+  margin-left: 60px;
+  font-size: 30px;
+  font-family: "Faustina", serif;
+  color: #fff;
+}
+.scroll {
+  margin: auto;
+  width: 96%;
+  font-size: 140%;
+  line-height: 1.5em;
+  text-align: center;
+  color: #fff;
+  background: #000;
+  overflow: hidden;
+}
+.scroll h1 {
+  display: inline-block;
+  padding-left: 100%;
+  white-space: nowrap;
+  line-height: 1em;
+  animation: scrollAnime 15s linear infinite;
+}
+@keyframes scrollAnime {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 350px;
+}
+
+/*フォント*/
+.bound span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  font-size: 5em;
+  font-weight: bold;
+  color: #96442e;
+  text-align: center;
+  width: 800px;
+  height: 100px;
+  animation: bound-anim 1.5s infinite;
+}
+
+@keyframes bound-anim {
+  0%,
+  100% {
+    top: 0;
+    transform: scale(1);
+  }
+  30% {
+    top: -55%;
+  }
+  50% {
+    transform: scale(1);
+  }
+  90% {
+    top: 0;
+    transform: scale(1.3, 0.8);
+  }
+}
+.desc {
+  font-size: 50px;
+  color: #fff;
+  text-align: center;
+}
