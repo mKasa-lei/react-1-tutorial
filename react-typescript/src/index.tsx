@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from "react-dom";
 import "./style.scss";
+import "./reset.css";
 import * as serviceWorker from "./serviceWorker";
 
 type PropsBoard = {
@@ -45,18 +46,17 @@ const Board: React.FC<PropsGame> = (props) => {
 
   return ( //書き方は簡単になったけれどやっていることはチュートリアルに書かれている物と同じ
     <div>
-      { squares }
+      { squares}
     </div>
   )
 }
 
-
-const Game:React.FC = () => {
-  const [history, setHistory] = useState<Array<{squares: Array<string | null>}>>([{ squares: Array(9).fill(null) }]); //過去の情報を格納するための配列を格納する。過去の手を保存するためのsquaresをsetStateする
+const Game: React.FC = () => {
+  const [history, setHistory] = useState<Array<{ squares: Array<string | null> }>>([{ squares: Array(16).fill(null) }]); //過去の情報を格納するための配列を格納する。過去の手を保存するためのsquaresをsetStateする
   const [stepNumber, setStepNumber] = useState<number>(0); //現在の手数の記録
   const [xIsNext, setXIsNext] = useState<boolean>(true); //現在XとOどちらのターンなのかの情報
 
-  const handleClick: Function = (i:number) => { //typeで書くとエラーが発生する
+  const handleClick: Function = (i: number) => { //typeで書くとエラーが発生する
     const historyData: Array<{ squares: Array<string | null> }> = history.slice(0, stepNumber + 1); //新たにクリックする手前までのデータ
     const current: { squares: Array<string | null> } = historyData[historyData.length - 1]; //現在の手
     const squares: Array<string | null> = current.squares.slice(); //打った手のデータを配列にいれる
@@ -70,20 +70,20 @@ const Game:React.FC = () => {
     setXIsNext(!xIsNext); //trueならfalse、falseならtrueを返す
   }
 
-  const jumpTo: Function = (step:number) => {
+  const jumpTo: Function = (step: number) => {
     setStepNumber(step); //現在が何手なのか
     setXIsNext((step % 2) === 0); //ここで偶数であるかどうかの判定をする。偶数であればtrueを返す
   }
 
-  const historyArray: Array<{ squares: Array<string | null>}> = history; //過去に打った手の情報を取得
-  const current: { squares: Array<string | null>} = historyArray[stepNumber];　//現在の手がどのような盤面になっているのかの情報
+  const historyArray: Array<{ squares: Array<string | null> }> = history; //過去に打った手の情報を取得
+  const current: { squares: Array<string | null> } = historyArray[stepNumber];　//現在の手がどのような盤面になっているのかの情報
   const winner: string | null = calculateWinner(current.squares); //現在までの手が勝利条件に当てはまっているのかどうか
 
   const moves: JSX.Element[] = historyArray.map((step, move) => {
     const desc: string = move ? 'Go to move #' + move : 'Go to game start'; //moveが０ならGo to startを表示させ、一手以降ならGo to moveを表示させる
     return (
-      <li key={move} className='play-history'>
-        <button onClick={() => jumpTo(move)}>{desc}</button>
+      <li key={move}>
+        <button className='remove-button' onClick={() => jumpTo(move)}>{desc}</button>
       </li>
     )
   })
@@ -98,6 +98,7 @@ const Game:React.FC = () => {
 
   return (
     <div className="game">
+      <div className='status'>{status}</div>
       <div className="game-board">
         <Board
           squares={current.squares}
@@ -105,8 +106,7 @@ const Game:React.FC = () => {
         />
       </div>
       <div className="game-info">
-        <div className='status'>{status}</div>
-        <ol>{moves}</ol>
+        <ol  className='play-history'>{moves}</ol>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+
 body{
     font: 20px "Century Gothic", Futura, sans-serif;
     margin: 20px;
@@ -16,22 +17,34 @@ button:focus{
     outline: none;
 }
 
-.game{
-    display: flex;
-}
-
 .game-info{
-    margin-left: 20px;
+    margin: 0 auto;
 }
 
 .play-history{
+    display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    list-style-type: none;
 }
 
-$bird_red: url(./images/bird_red.png);
+.remove-button{
+    background-color: #DEB887;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    height: 30px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
 
-.game-board{
-    cursor: $bird_red, auto;
+.status{
+    text-align: center;
+    font-size: 20px;
+    color: #FFFFFF;
+    background-color: #FFA07A;
+    margin-bottom: 20px;
+    padding: 20px 0;
 }
 
 .border-row{
@@ -42,6 +55,12 @@ $bird_red: url(./images/bird_red.png);
         content: '';
         display: table;
     }
+}
+
+.game-board{
+    width: calc(70px * 4);
+    margin: 0 auto;
+    margin-bottom: 10px;
 }
 
 .square{
@@ -56,9 +75,14 @@ $bird_red: url(./images/bird_red.png);
     margin-right: -1px;
     margin-top: -1px;
     padding: 0;
-    :hover{
-        background-color: #004D20;
-    }
+}
+
+.history-square{
+    background-color: #FFFFFF;
+    border: 1px solid #004D20;
+    text-align: center;
+    width: 20px;
+    height: 20px;
 }
 
 .round{
