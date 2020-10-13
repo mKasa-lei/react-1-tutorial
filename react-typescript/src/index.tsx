@@ -160,7 +160,7 @@ type PropsBoard = {
 const Square: React.FC<PropsBoard> = (props) => {
   return (
     /* マスが押されたらBoardのSquareのonClickを呼び出す */
-    <button className={props.click===true?(props.value==="X"?"square x click":(props.value==="O"?"square o click":"square")):"square"} onClick={props.onClick}>
+    <button className={props.click?(props.value==="X"?"square x click":(props.value==="O"?"square o click":"square")):"square"} onClick={props.onClick}>
       {/* props.value(suare)を○×を表示 */}
       {props.value}
     </button>
